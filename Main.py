@@ -1,65 +1,10 @@
-from MakeDict import list_elements
+from MakeDict import list_elements, get_colors
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import math
 
-elements = list_elements()
 
-subPlotRow = 0
-subPlotCol = 0
-
-fig, ax = plt.subplots(10, 18, figsize=(18, 9))
-
-for rowPlot in ax:
-    for plot in rowPlot:
-        if type(elements[subPlotRow, subPlotCol]) == dict:
-            # Disable the axis, so text can be put in place
-            plot.set_axis_off()
-
-            # Build a rectangle in axes coords, code from:
-            # https://matplotlib.org/stable/gallery/text_labels_and_annotations/text_alignment.html
-            left, width = 0, 1
-            bottom, height = 0, 1
-            right = left + width
-            top = bottom + height
-            p = plt.Rectangle((left, bottom), width, height, fill=True,
-                              color=elements[subPlotRow, subPlotCol]["Color"], alpha=0.3)
-            p.set_transform(plot.transAxes)
-            p.set_clip_on(False)
-            plot.add_patch(p)
-
-            # Write the symbol in the middle of the box
-            plot.text(0.5 * (left + right), 0.55 * (bottom + top),
-                      elements[subPlotRow, subPlotCol]["Symbol"],
-                      fontsize=15,
-                      horizontalalignment='center',
-                      verticalalignment='center', )
-            # Write the atom number in the top left corner of the box
-            plot.text(left + 0.05, top - 0.05,
-                      elements[subPlotRow, subPlotCol]["Atomic number"],
-                      fontsize=6,
-                      horizontalalignment='left',
-                      verticalalignment='top', )
-            # Write the Name of the element under the symbol in the centre of the box
-            plot.text(0.5 * (left + right), 0.27 * (bottom + top),
-                      elements[subPlotRow, subPlotCol]["Element"],
-                      fontsize=4,
-                      horizontalalignment='center',
-                      verticalalignment='center', )
-            # Write the atomic weight in the bottom left corner of the box
-            plot.text(left + 0.03, bottom + 0.01,
-                      elements[subPlotRow, subPlotCol]["Atomic mass"],
-                      fontsize=5,
-                      horizontalalignment='left',
-                      verticalalignment='bottom', )
-
-        else:
-            plot.set_axis_off()
-
-        subPlotCol += 1     # Keep track of the column
-    subPlotRow += 1         # Keep track of the row
-    subPlotCol = 0          # Reset column count when a new row is indexed
-
-
+# Function for creating a text box with more information once a element has been clicked on
 def create_fig(evt):
     if evt.inaxes:
         global elements
@@ -121,6 +66,96 @@ def create_fig(evt):
             newfig.show()
 
 
+# The list of elements
+elements = list_elements()
+
+# Keeping track of where an element needs to be print
+subPlotRow = 0
+subPlotCol = 0
+
+# Parameters for the boxes around the elements
+left, width = 0, 1
+bottom, height = 0, 1
+right = left + width
+top = bottom + height
+
+# Creating the plot
+fig, ax = plt.subplots(10, 18, figsize=(18, 9))
+
+# Iterating over every subplot and inserting the text of the element
+for rowPlot in ax:
+    for plot in rowPlot:
+        if type(elements[subPlotRow, subPlotCol]) == dict:
+            # Disable the axis, so text can be put in place
+            plot.set_axis_off()
+
+            # Build a rectangle in axes coords, principle comes from this website:
+            # https://matplotlib.org/stable/gallery/text_labels_and_annotations/text_alignment.html
+            p = plt.Rectangle((left, bottom), width, height, fill=True,
+                              color=elements[subPlotRow, subPlotCol]["Color"], alpha=0.3)
+            p.set_transform(plot.transAxes)
+            p.set_clip_on(False)
+            plot.add_patch(p)
+
+            # Write the symbol in the middle of the box
+            plot.text(0.5 * (left + right), 0.55 * (bottom + top),
+                      elements[subPlotRow, subPlotCol]["Symbol"],
+                      fontsize=15,
+                      horizontalalignment='center',
+                      verticalalignment='center', )
+            # Write the atom number in the top left corner of the box
+            plot.text(left + 0.05, top - 0.05,
+                      elements[subPlotRow, subPlotCol]["Atomic number"],
+                      fontsize=6,
+                      horizontalalignment='left',
+                      verticalalignment='top', )
+            # Write the Name of the element under the symbol in the centre of the box
+            plot.text(0.5 * (left + right), 0.27 * (bottom + top),
+                      elements[subPlotRow, subPlotCol]["Element"],
+                      fontsize=5,
+                      horizontalalignment='center',
+                      verticalalignment='center', )
+            # Write the atomic weight in the bottom left corner of the box
+            plot.text(left + 0.03, bottom + 0.01,
+                      elements[subPlotRow, subPlotCol]["Atomic mass"],
+                      fontsize=5,
+                      horizontalalignment='left',
+                      verticalalignment='bottom', )
+
+        else:
+            # If there is no element still disable the plot borders
+            plot.set_axis_off()
+
+        subPlotCol += 1     # Keep track of the column
+    subPlotRow += 1         # Keep track of the row
+    subPlotCol = 0          # Reset column count when a new row is indexed
+
+# Inserting the numbers of actinides and lanthanides
+for x in range(2):
+    plot = ax[x+5][2]
+    plot.set_axis_off()
+
+    p = plt.Rectangle((left, bottom), width, height, fill=False)
+    p.set_transform(plot.transAxes)
+    p.set_clip_on(False)
+    plot.add_patch(p)
+    if x == 0:
+        plot.text(0.5 * (left + right), 0.5 * (bottom + top), "57-70",
+                  fontsize=12,
+                  horizontalalignment='center',
+                  verticalalignment='center', )
+    else:
+        plot.text(0.5 * (left + right), 0.5 * (bottom + top), "89-102",
+                  fontsize=12,
+                  horizontalalignment='center',
+                  verticalalignment='center', )
+
+# Making the legend
+patches = [mpatches.Patch(color=get_colors()[key], alpha=0.3, label=key) for key in list(get_colors())[0:-1]]
+plt.figlegend(handles=patches, loc="upper center", fontsize=12)
+
+# Connect a button press event to show more info when an element has been pressed
 fig.canvas.mpl_connect("button_press_event", create_fig)
 
-plt.show()      # Create the periodic table
+# Create the periodic table
+plt.show()

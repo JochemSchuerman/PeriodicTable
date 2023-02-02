@@ -3,21 +3,6 @@ import numpy as np
 
 
 def list_elements():
-    # Attribute colors to all element types
-    colors = {
-        "Nonmetal": 'green',
-        "Noble Gas": 'purple',
-        "Alkali Metal": 'orange',
-        "Alkaline Earth Metal": 'yellow',
-        "Metalloid": 'cyan',
-        "Halogen": 'magenta',
-        "Metal": 'blue',
-        "Transition Metal": 'red',
-        "Lanthanide": 'brown',
-        "Actinide": 'pink',
-        "Transactinide": 'grey',
-        "": 'grey'
-    }
     # Create 10x18 matrix for all elements to go into
     elements = np.empty((10, 18), dtype=dict)
     # Make a cvs reader
@@ -44,7 +29,7 @@ def list_elements():
                 "Boiling point": row[21],
                 "Discoverer": row[23],
                 "Year": row[24],
-                "Color": colors[row[15]]
+                "Color": get_colors()[row[15]]
             }
             # If the type of the element is not Lanthanide or Actinide, the element should be
             # placed at index [period, group]
@@ -59,3 +44,20 @@ def list_elements():
                 elements[9, act_counter] = dict_element
                 act_counter += 1
     return elements
+
+
+def get_colors():
+    return {
+        "Nonmetal": 'green',
+        "Noble Gas": 'purple',
+        "Alkali Metal": 'orange',
+        "Alkaline Earth Metal": 'yellow',
+        "Metalloid": 'cyan',
+        "Halogen": 'magenta',
+        "Metal": 'blue',
+        "Transition Metal": 'red',
+        "Lanthanide": 'brown',
+        "Actinide": 'pink',
+        "Transactinide": 'grey',
+        "": 'grey'
+    }
