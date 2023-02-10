@@ -7,4 +7,4 @@ Used librarys:
 - math
 - csv
 
-![alt text](https://github.com/JochemSchuerman/PeriodicTable/master/Figure_1.jpg)
+![alt text](https://github.com/JochemSchuerman/PeriodicTable/blob/master/Figure_1.png?raw=true)
