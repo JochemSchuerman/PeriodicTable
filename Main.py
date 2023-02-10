@@ -16,11 +16,75 @@ def create_fig(evt):
             group = ((num+1) % 18)-1
             period = math.floor((num+1)/18)
 
+        # From here your period and group don't change, so it's clearest to create a
+        # variable:
+        element = elements[period, group]
+        # That way you don't have a shitload of dictionary accesses, which is kinda
+        # unclear and error-prone
         if type(elements[period, group]) == dict:
             newfig, newax = plt.subplots(figsize=(5, 5))
             newax.set_axis_off()
             # Display the detailed information of the element
             newax.text(0.05, 0.95, f'{elements[period, group]["Element"]}', fontsize=20)
+
+            # You have a lot of duplicate code below. This isn't bad per se, but there's
+            # also a lot of manual number decreasing (0.04 per row), which is error-prone.
+            # Since you're basically iterating over (text+elementvalue), you could create
+            # a for-loop. Pseudocode:
+
+            rows = [
+                ("Symbol: ", element["Symbol"]),
+                ("Atomic number: ", element["Atomic number"]),
+                ("Atomic mass: ", f'{element["Atomic mass"]} u'),
+                ("Phase at T=298K: ", f'{element["Phase"] or "Unknown"}'),
+                # etc
+            ]
+
+            # and then something like
+
+            first_row_y = 0.9
+            size_per_row = 0.04
+            for i, row in enumerate(rows):
+                y = first_row_y - (i * size_per_row)
+                newax.text(0.05, y, row[0], fontsize=10)
+                newax.text(0.55, y, row[1], fontsize=10)
+
+            # That's it!
+
+            # enumerate is fancy but you can also do
+            # i = 0
+            # for row in rows:
+            #     ...
+            #     i += 1
+            # which is exactly the same as enumerate
+            # https://docs.python.org/3/library/functions.html#enumerate
+
+            # The reason you would do this is because then, if you want to change
+            # something, you only need to change it in 1 place. Imagine changing x=0.55 ->
+            # x=0.70, you would need to
+            # 1) replace every one
+            # 2) don't forget one
+            # 3) check that you haven't forgotten one
+            # 4) check that you haven't mistyped one row
+            # 5) if you're replacing _all_ 0.55 in the file, check that you aren't
+            #    replacing a 0.55 that's not meant to be an x-value.
+            #
+            # Or, imagine that you don't want to include electronegativity, or want to
+            # order the rows by alphabet! That means a lot of manual shuffling,
+            # recalculating -0.04's, whatever, and a lot of (manual) testing to see that
+            # you haven't screwed anything up.
+
+            # Also, in your old code, there's a lot going on. Sometimes the left side is
+            # only a string and the right side is whatever comes out of your elements
+            # dict, but sometimes it's more complicated, and you have a unit on the right
+            # side, or replace it with "Unknown". This is now happening inside
+            # if-statements inside newax.text() function calls, which makes it difficult
+            # to see what exactly you are doing where.
+
+            # If you move the text generation to one part of the code, and then the
+            # newax.text() function calls in another, you can see more clearly what the
+            # logical part of your code is, which makes it easy to ever explain or change
+            # it in the future.
 
             newax.text(0.05, 0.9,  'Symbol: ', fontsize=10)
             newax.text(0.55, 0.9,  f'{elements[period, group]["Symbol"]}', fontsize=10)
