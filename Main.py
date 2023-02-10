@@ -140,12 +140,12 @@ for x in range(2):
     p.set_clip_on(False)
     plot.add_patch(p)
     if x == 0:
-        plot.text(0.5 * (left + right), 0.5 * (bottom + top), "57-70",
+        plot.text(0.5 * (left + right), 0.5 * (bottom + top), "57-71",
                   fontsize=12,
                   horizontalalignment='center',
                   verticalalignment='center', )
     else:
-        plot.text(0.5 * (left + right), 0.5 * (bottom + top), "89-102",
+        plot.text(0.5 * (left + right), 0.5 * (bottom + top), "89-103",
                   fontsize=12,
                   horizontalalignment='center',
                   verticalalignment='center', )
