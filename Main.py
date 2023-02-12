@@ -21,6 +21,20 @@ def create_fig(evt):
         element = elements[period, group]
         # That way you don't have a shitload of dictionary accesses, which is kinda
         # unclear and error-prone
+
+        # This next if-check is weird. Adding it ensures that your code doesn't break if
+        # element isn't a dict, but perhaps it should break in that case. The goal of this
+        # part is to show information about an element in a window. If element isn't a
+        # dict, you won't show anything, and this will be a 'silent' bug. This is more
+        # difficult to debug than a crash, and since showing information about an element
+        # is the core functionality of your program, I think that it's fine if it crashes
+        # when it can't do this job.
+        #
+        # However that's an opinion, but if you don't want to do that I would add a log
+        # (import logging;logging.warning(), or just print()) statement explaining that
+        # something is going wrong and you don't know what. If you then find out that you
+        # _can_ explain what's going wrong before running the code, you don't have to log
+        # an error, and you can just fix the bug ;)
         if type(elements[period, group]) == dict:
             newfig, newax = plt.subplots(figsize=(5, 5))
             newax.set_axis_off()
