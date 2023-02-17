@@ -1,7 +1,7 @@
 # PeriodicTable
-A clickable periodic tablew in Python
+A clickable periodic table in Python
 
-Used librarys: 
+Used libraries (see requirements.txt): 
 - numpy
 - matplotlib
 - math
